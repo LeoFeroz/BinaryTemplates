@@ -1,0 +1,19 @@
+struct Yukes_TexureContainerHeader { // 000A.dat or 000C.dat
+    uint32  TexNumber;
+    uint32  null <format=hex>;
+    uint32  null <format=hex>;
+    uint32  TexNameOffeset <format=hex>;
+} header;
+
+struct TexInfo {
+    char    TextureName[16];
+    char    TextureFormat[4];
+    uint32  unknow <format=hex>;
+    uint32  TextureOffset <format=hex>; 
+    uint32  TextureFlag <format=hex>;
+};
+
+local int oldPos = FTell();         
+FSeek(header.TexNameOffeset);
+TexInfo Textures[header.TexNumber];
+FSeek(oldPos);                     

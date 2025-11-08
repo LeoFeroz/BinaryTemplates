@@ -1,0 +1,24 @@
+LittleEndian();
+struct CDS_HEADER {
+    char    Format[8]; //#CDSþÿ\0
+    int32   numDem;
+    int32   null;
+    uint32  DEM_StructOffset <format=hex>;
+    uint32  null;
+} header;
+
+struct DEM_Struct {
+    uint32  index;
+    uint32  unknow;
+    uint32  BBA_Name <format=hex>; ////If there is a duplicate, use only one. Both inputs use the same name with the same offset.
+    uint32  unknow;
+    uint32  CHAR_Name <format=hex>; //If there is a duplicate name, use only one. Both inputs use the same name with the same offset.
+    uint32  unknow;
+    uint32  NULL <format=hex>; //If there is a duplicate, use only one. Both inputs use the same name with the same offset.
+    uint32  unknow;
+    uint32  TdbEntryIndex <format=hex>; //if is FFFFFFFF =Null
+    uint32  unknow;
+};
+
+
+DEM_Struct DEMO_Entry[header.numDem];

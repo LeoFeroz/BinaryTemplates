@@ -1,0 +1,22 @@
+LittleEndian();
+struct BMG_HEADER {
+    char    Format[8]; //#BMGþÿ
+    int32   numMSG;
+    int32   null;
+    uint32  MSG_StructOffset <format=hex>;
+    uint32  null;
+    uint32  null;
+    uint32  null;
+} header;
+
+struct Mesage_Struct {
+    uint32  BBA_NAME <format=hex>;
+    uint32  Null;
+    uint32  unknow;
+    uint32  unknow;
+    uint32  unknow;
+    uint32  Null;
+};
+
+
+Mesage_Struct MSG_Entry[header.numMSG];
