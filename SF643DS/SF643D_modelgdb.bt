@@ -1,0 +1,625 @@
+//------------------------------------------------
+//--- 010 Editor v16.0.2 Binary Template
+//------------------------------------------------
+
+// ********************************************
+// * ____  _____ __   _  _  _____ ____  ____  *
+// */ ___||  ___/ /_ | || ||___ /|  _ \/ ___| *
+// *\___ \| |_ | '_ \| || |_ |_ \| | | \___ \ *
+// * ___) |  _|| (_) |__   _|__) | |_| |___) |*
+// *|____/|_|   \___/   |_||____/|____/|____/ *
+// ********************************************   
+// Format: ".modelgdb" (Header)       
+// Author: LeoFeroz     
+// Version: 1.0     
+// Game: StarFox64 3DS   (Final Version)   
+// Platform:    Nintendo 3DS    
+// Endianness:  Little Endian
+//
+// Disclaimer: Feel free to use this template to create tools, just don't steal // the authorship of the person who wrote it.
+
+//------------------------------------------------
+// Format: ".modelbin" (Raw Binary Data)
+// Know VertexFormat (There may be some that have not been identified yet.)
+/*
+    VertexFormat = 55363;     // Pos + Normal
+    VertexFormat = 1703943;   // Pos + Normal + Color
+    VertexFormat = 2031623;   // Pos + Normal + Color
+    VertexFormat = 9043979;   // Pos + Normal + TexCoord
+    VertexFormat = 13565963;  // Pos + Normal + TexCoord
+    VertexFormat = 10092559;  // Pos + Normal + Color + TexCoord
+    VertexFormat = 14614543   // Pos + Normal + Color + TexCoord
+    VertexFormat = 42598427;  // Pos + Normal + Tangent + TexCoord
+    VertexFormat = 63897627;  // Pos + Normal + Tangent + TexCoord
+    VertexFormat = 43647007;  // Pos + Normal + Color + Tangent + TexCoord
+    VertexFormat = 64946207;  // Pos + Normal + Color + Tangent + TexCoord
+    VertexFormat = 144310319; // Pos + Normal + Color + TexCoord + TexCoord1
+    VertexFormat = 215941167; // Pos + Normal + Color + TexCoord + TexCoord1
+    VertexFormat = 176816187; // Pos + Normal + Tangent + TexCoord + TexCoord1
+    VertexFormat = 265224251; // Pos + Normal + Tangent + TexCoord + TexCoord1
+*/
+//------------------------------------------------
+
+enum <int8> VARIABLE_TYPE {
+    TYPE_Array    = 1,
+    TYPE_Bool     = 3,
+    TYPE_Int32    = 5,
+    TYPE_Matrix   = 6,
+    TYPE_Node     = 7,
+    TYPE_Vector2  = 11,
+    TYPE_Vector3  = 12,
+    TYPE_Vector4  = 13,
+    TYPE_Colour   = 14,
+    TYPE_String   = 9,
+    TYPE_Float32  = 4,
+    TYPE_UInt32   = 15,
+};
+
+enum <int32> Bool_Struct {
+    False = 0,
+    True  = 1,
+};
+
+enum <int32> NodeParameter_TYPE {
+    // #GDB
+    GDB_Root             = 1352772277,
+    // #MeshOptions
+    Node_MeshOptions     = -488011910,
+    ShadowVolume         = 1001998177,
+    FadeObject           = -332989832,
+    FadeOffset           = -14605809,
+    NearFadeObject       = 51285215,
+    NearFadeOffset       = -2051322784,
+    ConstColorAnimIndex  = 1108794341,
+    // #Geometry
+    Node_Geometries      =  360579967,
+    Node_Geometry        = -757579918,
+    PrimitiveType        = -104935593,
+    VertexFormat         = -1362596130,
+    AttrScale0           = -1266691425,
+    AttrScale1           = -709131098,
+    IndexFormat          = -1993892753,
+    IndexStreamOffset    = -865834674,
+    IndexStreamSize      = -780897206,
+    IndexNum             = -1962213226,
+    VertexStreamOffset   = -515714720,
+    VertexStreamSize     = 1674817633,
+    VertexNum            = -979446248,
+    MaterialIndex        = 663521609,
+    // #Material
+    Node_Materials       = -2062714308,
+    Node_Material        = -1385891283,
+    StringName           = -1971221665,
+    UseFragmentLighting  = -659374150,
+    IsTransparency       = 71340842,
+    UseVertexLighting    = -206683841,
+    UseFog               = -471570755,
+    TextureCoordinateConfig = -1369178552,
+    TranslucencyKind     = 1746850851,
+    RenderLayerGroup     = 1017698906,
+    LayerConfig          = 1401543690,
+    AlphaTest            = 1387875729,
+    AlphaRef             = 1842939170,
+    AlphaTestMode        = -1994583973,
+    DepthTest            = 1641774600,
+    DepthMask            = -1613145291,
+    DepthTestMode        = 347900879,
+    StencilTest          = 821662382,
+    StencilWrite         = -1951242902,
+    StencilFuncMode      = 688880037,
+    StencilOpFail        = -321343351,
+    StencilOpZFail       = 514436612,
+    StencilOpZPass       = 593031746,
+    StencilFuncMask      = -1301976821,
+    StencilFuncRef       = -879004742,
+    StencilMask          = -39498597,
+    CullMode             = -662588357,
+    BlendMode            = 1174131375,
+    BlendFactorSrc       = 684129548,
+    BlendFactorDst       = -117876327,
+    BlendEquation        = 226122427,
+    Diffuse              = -1781882713,
+    Ambient              = 1547810167,
+    Emission             = -1920920230,
+    Specular0            = -1449182877,
+    Specular1            = 909287669,
+    LightMask            = -309254900,
+    Node_Texture0        = -1967928712,
+    Node_Texture1        = -1687640082,
+    Node_Texture2        = -1189146981,
+    Node_Texture3        = -1481990452,
+    ResourceID           = 1941196603,
+    MinFilter            = 2060055795,
+    MagFilter            = 1804118712,
+    WrapS                = 1856981573,
+    WrapT                = -674098101,
+    MinLod               = -77217388,
+    LoaBias              = -1436010221,
+    BorderColor          = 1577942779,
+    TextureMappingType   = -1511106643,
+    TextureAnimation0    = -927414441,
+    TextureAnimation1    = -716840547,
+    TextureAnimation2    = 2126273989,
+    PatternTextureAnimation0 = -805128585,
+    PatternTextureAnimation1 = -763612764,
+    PatternTextureAnimation2 = -185676379,
+    Node_CombinerConstColors = -391543550,
+    Const0               = -1076741144,
+    Const1               = -1148015779,
+    Const2               = 978679069,
+    Const3               = 213673218,
+    Const4               = -1335573505,
+    Const5               = 2092034191,
+    ConstColor           = -1492789418,
+    ColorFunc            = -1524901941,
+    ColorOperand0        = -1829919714,
+    ColorOperand1        = -1414344124,
+    ColorOperand2        = -1009497437,
+    ColorSource0         = 596328014,
+    ColorSource1         = 1914609244,
+    ColorSource2         = -1602500433,
+    ColorScale           = 620532674,
+    AlphaFunc            = 991357341,
+    AlphaOperand0        = 401335937,
+    AlphaOperand1        = -1002565819,
+    AlphaOperand2        = 742938241,
+    AlphaSource0         = -1271045490,
+    AlphaSource1         = -794375516,
+    AlphaSource2         = -2070925651,
+    AlphaScale           = 389516855,
+    Node_Combiner0       = 876014322,
+    Node_Combiner1       = 1232392624,
+    Node_Combiner2       = 30929871,
+    Node_Combiner3       = 680347673,
+    Node_Combiner4       = -2010835333,
+    FresnelFactor        = 1165689480,
+    SpecularClamp        = 1712419094,
+    GeomFactor0          = 2024217648,
+    GeomFactor1          = 998498320,
+    D0Factor             = 228816489,
+    D1Factor             = 1291513832,
+    G0Factor             = -1411789167,
+    G1Factor             = -1457861188,
+    ReflectionFactor     = 1119292991,
+    SpotFactor           = 1781263482,
+    TextureBumpMode      = -299143098,
+    BumpTextureIdx       = 1654943486,
+    BumpRenormalize      = -729096971,
+    Node_FragmentLighting = 470775241,
+    Type                 = 304943464,
+    Input                = -349860606,
+    IsAbs                = -575912132,
+    Scale                = -1084000750,
+    DataOffset           = -1526270895,
+    DataSize             = 1954353004,
+    Node_LUTexture0      = 76372553,
+    Node_Nodes           = 609679836,
+    Node_Node            = -795914074,
+    ParentIndex          = 80758280,
+    LocalMtx             = -1933032470,
+    geometryIndces       = 993321616,
+};
+
+
+struct GDB1_HEADER {
+    char    Format[4];
+    uint32  null <format=hex>;
+    uint32  DebugTextOffset <format=hex>;  //No Use Only Garabage
+    int8    unknow;
+    int8    NodesAmount; //Perhaps it's a GDB1 type, but all modelgdb use 4.
+    int16   null;
+    int32   null;
+    NodeParameter_TYPE   ParameterType;
+    uint32  Node_MeshOptions_StartOffset <format=hex>;
+    uint32  Node_Materials_StartOffset <format=hex>;
+    uint32  Node_Geometry_StartOffset <format=hex>;
+    uint32  Node_Nodes_StartOffset <format=hex>;
+} header;
+
+struct Vectors_Struct(int value) {
+    
+    switch (value) {
+        case 2:
+        float VariableValue[2];
+            break;
+        case 3:
+        float VariableValue[3];
+            break;
+        case 4:
+        float VariableValue[4];
+            break;  
+        case 5:
+        float Value[16];
+            break;
+        default:
+        float VariableValue;
+            break;
+    }
+};
+
+struct SubMatValue_Struct {
+    VARIABLE_TYPE VariableType;
+    switch (VariableType) {
+        case TYPE_Matrix:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            Vectors_Struct Mtx(5);
+            break;
+        case TYPE_Vector2:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            Vectors_Struct Vec2f(2);
+            break;
+        case TYPE_Vector3:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            Vectors_Struct Vec3f(3);
+            break;
+        case TYPE_Vector4:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            Vectors_Struct Vec4f(4);
+            break;
+        case TYPE_Colour:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            uint8 Colour[4];
+            break;
+        case TYPE_Bool:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            Bool_Struct VariableValue;
+            break;
+        case TYPE_Float32:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            float VariableValue;
+            break;
+        case TYPE_String:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            int32 StringSize;
+            char MatName[StringSize];
+            break;
+        case TYPE_UInt32:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            if (ParameterType == ResourceID) {
+                uint32 TextureID <format=hex>;
+            } else {
+                uint32 VariableValue <format=hex>;
+            }
+            break;
+        default:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            int32 VariableValue;
+            break;
+    }
+};
+
+struct MatValue_Struct {
+    VARIABLE_TYPE VariableType;
+    switch (VariableType) {
+        case TYPE_Node:
+            int8 ParamNum;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            local int i;
+            if (ParameterType == Node_Texture3) {
+                break;
+            }
+            uint32 ParamOffset[ParamNum] <format=hex>;
+            
+            for (i = 0; i < ParamNum; i++)
+            {
+                if (ParamOffset[i] > 0)
+                {
+                     FSeek(ParamOffset[i]);
+
+                        SubMatValue_Struct SubNodeValues;
+
+                }
+             }
+
+            break;
+         case TYPE_Array:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            int32 ArrayElements;
+            VARIABLE_TYPE VariableType;
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 value[ArrayElements];
+            int32 unkflag;
+            break;
+         case TYPE_Matrix:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            Vectors_Struct Mtx(5);
+            break;
+        case TYPE_Vector2:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            Vectors_Struct Vec2f(2);
+            break;
+        case TYPE_Vector3:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            Vectors_Struct Vec3f(3);
+            break;
+        case TYPE_Vector4:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            Vectors_Struct Vec4f(4);
+            break;
+        case TYPE_Bool:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            Bool_Struct VariableValue;
+            break;
+        case TYPE_Float32:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            float VariableValue;
+            break;
+        case TYPE_String:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            int32 StringSize;
+            char MatName[StringSize];
+            break;
+        case TYPE_UInt32:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            uint32 VariableValue <format=hex>;
+            break;
+        default:
+            int8 null;
+            int8 null;
+            int8 null;
+            int32 unkflag;
+            NodeParameter_TYPE ParameterType;
+            int32 VariableValue;
+            break;
+    }
+};
+
+struct NodesNodes_Struct {
+    VARIABLE_TYPE StructType;
+    int8 NodesParameterTotal;
+    int16 null;
+    int32 flag;
+    NodeParameter_TYPE NodeType;
+    uint32 NodesPararmeterOffset[NodesParameterTotal] <format=hex>;
+    
+    local int i;
+    for (i = 0; i < NodesParameterTotal; i++)
+    {
+        if (NodesPararmeterOffset[i] > 0)
+        {
+            FSeek(NodesPararmeterOffset[i]);
+
+            MatValue_Struct NodeValues;
+
+        }
+    }
+};
+
+struct Material_Struct {
+    VARIABLE_TYPE StructType;
+    int8 MatParameterTotal;
+    int16 null;
+    int32 flag;
+    NodeParameter_TYPE NodeType;
+    uint32 MatPararmeterOffset[MatParameterTotal] <format=hex>;
+    
+    local int i;
+    for (i = 0; i < MatParameterTotal; i++)
+    {
+        if (MatPararmeterOffset[i] > 0)
+        {
+            FSeek(MatPararmeterOffset[i]);
+
+            MatValue_Struct NodeValues;
+
+        }
+    }
+};
+
+struct GeoValue_Struct { 
+
+    VARIABLE_TYPE VariableType;
+    int8 null;
+    int8 null;
+    int8 null;
+    int32 unkflag;
+    NodeParameter_TYPE ParameterType;
+    
+    switch (VariableType) {
+        case 5:
+            int32 VariableValue;
+            break;
+        case 13:
+            float FloatVaraibleValue[4];
+            break;
+        default:
+            int32 VariableValue;
+            break;
+        
+    }
+};
+
+struct Geometry_Struct {
+    VARIABLE_TYPE StructType;
+    int8  GeoParamNum;
+    int16 null;
+    int32 flag;
+    NodeParameter_TYPE NodeType;
+    uint32 GeoPararmeterOffset[GeoParamNum] <format=hex>;
+    
+    local int i;
+    for (i = 0; i < GeoParamNum; i++)
+    {
+        if (GeoPararmeterOffset[i] > 0)
+        {
+            FSeek(GeoPararmeterOffset[i]);
+
+            MatValue_Struct NodeValues;
+
+        }
+    }
+};
+
+struct Node_Geometrie {
+    VARIABLE_TYPE StructType; 
+    int8 MeshesNum;
+    int16 null;
+    int32 flag;
+    NodeParameter_TYPE NodeType;
+    uint32 MeshPararmeterOffset[MeshesNum] <format=hex>;
+    local int i;
+
+    for (i = 0; i < MeshesNum; i++)
+    {
+        if (MeshPararmeterOffset[i] > 0)
+        {
+            FSeek(MeshPararmeterOffset[i]);
+
+            Geometry_Struct Node_Geometry;
+        }
+    }
+};
+
+struct Node_MeshOptions {
+    VARIABLE_TYPE StructType;   
+    int8  OptionsNum;
+    int8 null;
+    int8 null;
+    int32 unkflag;
+    NodeParameter_TYPE NodeType;
+    uint32  OptionsStartOffset[OptionsNum] <format=hex>;
+    local int i;
+
+    for (i = 0; i < OptionsNum; i++)
+    {
+        if (OptionsStartOffset[i] > 0)
+        {
+          FSeek(OptionsStartOffset[i]);
+    
+           MatValue_Struct Node_Values;
+        }
+    }
+};
+
+struct Node_Materials {
+    VARIABLE_TYPE StructType;   
+    int8  MaterialNum;
+    int16 null;
+    int32 flag;
+    NodeParameter_TYPE NodeType;
+    uint32  MaterialsStartOffset[MaterialNum] <format=hex>;
+    local int i;
+
+    for (i = 0; i < MaterialNum; i++)
+    {
+        if (MaterialsStartOffset[i] > 0)
+        {
+          FSeek(MaterialsStartOffset[i]);
+    
+           Material_Struct Node_Material;
+        }
+    }
+};
+
+struct Node_Nodes {
+    VARIABLE_TYPE StructType;   
+    int8  NodesNum;
+    int16 null;
+    int32 flag;
+    NodeParameter_TYPE NodeType;
+    uint32  NodesStartOffset[NodesNum] <format=hex>;
+    local int i;
+
+    for (i = 0; i < NodesNum; i++)
+    {
+        if (NodesStartOffset[i] > 0)
+        {
+          FSeek(NodesStartOffset[i]);
+    
+           NodesNodes_Struct Node_Node;
+        }
+    }
+};
+
+FSeek(header.Node_MeshOptions_StartOffset);
+Node_MeshOptions i0 <name="Node_MeshOptions">;
+
+FSeek(header.Node_Materials_StartOffset);
+Node_Materials   i1 <name="Node_Materials">;
+
+FSeek(header.Node_Geometry_StartOffset);
+Node_Geometrie Node_Geometries;
+
+FSeek(header.Node_Nodes_StartOffset);
+Node_Nodes       i3 <name="Node_Nodes">;

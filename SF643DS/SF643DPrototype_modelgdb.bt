@@ -1,0 +1,139 @@
+//------------------------------------------------
+//--- 010 Editor v16.0.2 Binary Template
+//------------------------------------------------
+//---Incomplete Only Geometry Functional
+LittleEndian();
+
+// --- ENUMS ---
+
+enum <int32> STRUCT_TYPE {
+    Node      = 7,
+};
+
+enum <int32> NODE_TYPE {
+    Node_Materials     = 5,
+    Node_Geometries    = 967,
+    Node_Geometry      = 978,
+};
+
+enum <int32> VARIABLE_TYPE {
+    TYPE_Int32  = 5,
+    TYPE_Float  = 6,
+    TYPE_String = 7
+};
+
+// --- ESTRUTURAS ---
+
+struct GDB1_HEADER {
+    char    Format[4];
+    uint32  null <format=hex>;
+    uint32  TextOffset <format=hex>;
+    int8    unknow;
+    int8    GDB1Type;
+    int16   null;
+    int32   null;
+    int32   null;
+    uint32  Node_Geometry_StartOffset <format=hex>;
+    uint32  Node_Nodes_StartOffset <format=hex>;
+} header;
+
+struct Material_Struct {
+    int32 Flag0;
+    NODE_TYPE   NodeType;  
+    int32 MatParameterTotal;
+    uint32 MatPararmeterOffset[MatParameterTotal] <format=hex>;
+};
+
+struct GeoValue_Struct;
+string GetCommentByOrder( GeoValue_Struct &val );
+
+struct GeoValue_Struct {
+    local int loop_index; 
+
+    VARIABLE_TYPE VariableType;
+    int32 flag;
+    int32 unkflag;
+    int32 VariableValue;
+};
+
+string GetCommentByOrder( GeoValue_Struct &val )
+{
+    local int seq = val.loop_index % 10;
+
+    switch(seq)
+    {
+        case 0: return "PrimitiveType";
+        case 1: return "VertexFormat";
+        case 2: return "IndexFormat";
+        case 3: return "IndexStreamOffset";
+        case 4: return "IndexStreamSize";
+        case 5: return "IndexNum";
+        case 6: return "VertexStreamOffset";
+        case 7: return "VertexStreamSize";
+        case 8: return "VertexNum";
+        case 9: return "MaterialIndex";
+    }
+    return "";
+}
+
+struct Geometry_Struct {
+    STRUCT_TYPE StructType; 
+    NODE_TYPE   NodeType; 
+    int32  GeoParamNum;
+    uint32 GeoPararmeterOffset[GeoParamNum] <format=hex>;
+    
+    local int i;
+    for (i = 0; i < GeoParamNum; i++)
+    {
+        if (GeoPararmeterOffset[i] > 0)
+        {
+            FSeek(GeoPararmeterOffset[i]);
+            GeoValue_Struct Values <comment=GetCommentByOrder>;
+            Values[i].loop_index = i;
+        }
+    }
+};
+
+struct Node_Geometrie {
+    STRUCT_TYPE StructType; 
+    NODE_TYPE   NodeType;   
+    int32 MeshesNum;
+    uint32 MeshPararmeterOffset[MeshesNum] <format=hex>;
+    local int i;
+
+    for (i = 0; i < MeshesNum; i++)
+    {
+        if (MeshPararmeterOffset[i] > 0)
+        {
+            FSeek(MeshPararmeterOffset[i]);
+
+            Geometry_Struct Node_Geometry;
+        }
+    }
+};
+
+struct Node_Materials {
+    STRUCT_TYPE StructType; 
+    NODE_TYPE   NodeType;   
+    int32   MaterialNum;
+    uint32  MaterialsStartOffest[MaterialNum] <format=hex>;
+    local int i;
+
+    for (i = 0; i < MaterialNum; i++)
+    {
+        if (MaterialsStartOffest[i] > 0)
+        {
+            FSeek(MaterialsStartOffest[i]);
+
+            Material_Struct Node_Material;
+        }
+    }
+};
+
+Node_Materials Materials <name="Node_Materials">;
+
+if (header.Node_Geometry_StartOffset > 0)
+{
+    FSeek(header.Node_Geometry_StartOffset);
+    Node_Geometrie Node_Geometries;
+}
