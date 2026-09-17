@@ -1,0 +1,397 @@
+//------------------------------------------------
+// Tipos auxiliares
+//------------------------------------------------
+
+// Referência (offset em bytes, a partir do INÍCIO DO ARQUIVO)
+// para uma string terminada em \0 na tabela de strings.
+// O "read=" mostra um preview da string resolvida direto na
+// árvore do template.
+string ReadRefString( int64 offset )
+{
+    local string s;
+
+    if( offset == 0 )
+        return "NULL";
+
+    if( offset < 0 || offset >= FileSize() )
+        return "<offset invalido>";
+
+    local int64 pos = FTell();
+
+    FSeek( offset );
+    SPrintf( s, "%s", ReadString( FTell() ) );
+
+    FSeek( pos );
+
+    return s;
+}
+
+string ResourceRefRead( int32 &offset )
+{
+    return ReadRefString( offset );
+}
+
+typedef struct {
+    int32 offset <read=ResourceRefRead>; // offset p/ string em algum lugar do arquivo
+} ResourceRef;
+
+// Cada entrada da tabela principal do cabeçalho é um par
+// (quantidade de registros, offset absoluto onde a seção
+// começa). Quando count==0, offset também costuma ser 0 e
+// a seção simplesmente não existe nesse arquivo.
+typedef struct {
+    int32 count;
+    int32 offset<format=hex>;
+} TOCEntry <read=TOCEntryRead>;
+
+string TOCEntryRead( TOCEntry &t )
+{
+    local string s;
+    SPrintf( s, "count=%d offset=0x%X", t.count, t.offset );
+    return s;
+}
+
+// Matriz de transformação 4x4 (linha-maior, aparentemente).
+// Em todas as amostras observadas até agora ela vem como
+// identidade (sem rotação/escala/translação aplicada).
+typedef struct {
+    float m00, m01, m02, m03;
+    float m10, m11, m12, m13;
+    float m20, m21, m22, m23;
+    float m30, m31, m32, m33;
+} Matrix4x4;
+
+//------------------------------------------------
+// Bloco de "configurações de cena" (0x58 a 0x18F, 312 bytes)
+// Valores identificados comparando os 3 arquivos: os que são
+// SEMPRE iguais nas 3 amostras parecem ser constantes do motor
+// (engine); os que MUDAM de arquivo pra arquivo são específicos
+// do mapa (iluminação, névoa, tamanho, etc.)
+//------------------------------------------------
+typedef struct {
+    float unkFloat_10000;      // sempre 10000.0
+    float gravityY;            // sempre -9.8 (gravidade, eixo Y)
+    int32 unkInt_4;            // sempre 4 ??
+    float upVector[3];         // sempre (0.577, -0.577, 0.577) ~ vetor normalizado (1,-1,1)/sqrt(3) - provável direção de luz padrão ??
+    float ambientColor[3];     // sempre (0.3, 0.3, 0.3) nas amostras - cor de luz ambiente ??
+    float diffuseColor[3];     // VARIA entre mapas (0.7,0.7,0.7 ou 1,1,1) - cor de luz difusa ??
+    float fogNear;
+    float fogDistance;         // VARIA (500 / 4600->500 / 10000) - distância de névoa/desenho ??
+    float fogColor[3];         // VARIA (0,0,0 ou 1,1,1) - cor da névoa ??
+    float unkVec_1_1_1[3];     // sempre (1,1,1) ??
+    float unkFloat_100_b;      // sempre 100.0 ??
+    float unkFloat_300;        // sempre 300.0 ??
+    float unkFloat_75;         // sempre 75.0 ??
+    float unkFloat_50;         // sempre 50.0 ??
+    float unkVec_half[3];      // sempre (0.5, 0.5, 0.5) ??
+    float unkFloat_0_1;        // sempre 0.1 ??
+    float boundsRadius;        // (4500 / 4600) - provável raio/limite do mapa ??
+    float sunAngle;            // sempre 0.785398 (= PI/4, 45 graus) - provável ângulo do sol??
+    byte  reserved[192];       // lixo de memoria
+} SceneSettings;
+
+typedef struct {
+    char  magic[4];             // sempre "#FMP"
+    ubyte versionMajor;         
+    ubyte versionMinor;         
+    ubyte versionPatch;   
+    ubyte versionReserved;
+    int32 unkInt_2;             // sempre 2 ??
+    int32 unkInt_0;             // sempre 0 ??
+    uint32 settingsOffset<format=hex>;           // sempre 88 (0x58) - tamanho deste cabeçalho fixo antes da SceneSettings
+    uint32 unkSize_208<format=hex>;          // sempre 208 (0xD0) - tamanho de algo dentro/perto do SceneSettings ??
+    TOCEntry sections[6];
+
+    int32 reserved0[4];         // sempre zero nas amostras
+
+    SceneSettings settings;
+} FileHeader;
+
+
+typedef struct {
+    int32 unkA;  // offset ??
+    int32 unkB;  // sempre 1?
+    int32 unkC;
+    int32 unkD;
+} SpecialEntry;
+
+typedef struct {
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+} DataTypeA;
+
+typedef struct {
+    int32 nameOffset <read=ResourceRefRead>; // offset p/ string com o nome do objeto
+    int32 type;          // 1, 3 ou 5 nas amostras - parece indicar categoria
+                          // (1=camada/fundo, 3=script ou textura, 5=som) ??
+    int32 flags;          // bitflags - significado ainda não mapeado ??
+    int32 dataOffsetA<format=hex>;    // offset p/ dado extra (usado por objetos tipo "fundo" e "som") ??
+    int32 dataOffsetB<format=hex>;    // offset p/ dado extra (usado por objetos tipo "script" e "som") ??
+    int32 hasExtraC;
+    int32 dataOffsetC<format=hex>;
+    int32 hash;       // sempre 0x3FFFFFFF
+    Matrix4x4 Matrix; 
+    int32 Name<read=ResourceRefRead>;
+    int32 val;
+    int32 flag;
+    uint32 offset<format=hex>;
+    uint32 offset<format=hex>;
+    uint32 test06<format=hex>;
+    uint32 test07<format=hex>;
+    uint32 flag<format=hex>;
+    uint32 flag<format=hex>;
+    uint32 test10<format=hex>;
+    uint32 test11<format=hex>;
+    uint32 test12<format=hex>;
+    uint32 test13<format=hex>;
+    uint32 flag<format=hex>;
+    uint32 test15<format=hex>;
+    uint32 test16<format=hex>;
+    uint32 test17<format=hex>;
+    uint32 test18<format=hex>;
+    uint32 flag<format=hex>;
+    uint32 test20<format=hex>;
+    uint32 test21<format=hex>;
+    uint32 test22<format=hex>;
+    uint32 test23<format=hex>;
+    uint32 flag<format=hex>;
+
+    // FIX: os offsets abaixo geralmente apontam para trás no arquivo.
+    // É preciso salvar e restaurar a posição do ponteiro depois de ler,
+    // senão o próximo elemento do array ObjectEntry[] começa a ser lido
+    // no lugar errado e o 010 Editor acusa
+    // "Ending position was in front of starting position".
+    local int64 __pos;
+
+    if (dataOffsetA > 0) {
+        __pos = FTell();
+        FSeek(dataOffsetA);
+        DataTypeA Data_A;
+        FSeek(__pos);
+    }
+
+    if (dataOffsetB > 0) {
+        __pos = FTell();
+        FSeek(dataOffsetB);
+        DataTypeA Data_B;
+        FSeek(__pos);
+    }
+
+    if (dataOffsetC > 0) {
+        __pos = FTell();
+        FSeek(dataOffsetC);
+        DataTypeA Data_C;
+        FSeek(__pos);
+    }
+
+} ObjectEntry <read=ObjectEntryRead>;
+
+typedef struct
+{
+    int32 Subpart_Name<read=ResourceRefRead>;
+    int32 val;
+    int32 val;
+    int32 val;
+    uint32 offset1<format=hex>;
+    uint32 offset2<format=hex>;
+    uint32 offset3<format=hex>;
+    uint32 offset4<format=hex>;
+    uint32 offset5<format=hex>;
+} ValuesType_M1;
+
+typedef struct
+{
+    uint32 offset1<format=hex>;
+    uint32 offset2<format=hex>;
+    uint32 offset3<format=hex>;
+    uint32 offset4<format=hex>;
+    uint32 offset5<format=hex>;
+    uint32 offset6<format=hex>;
+    uint32 offset7<format=hex>;
+    uint32 offset8<format=hex>;
+    uint32 offset9<format=hex>;
+    uint32 offset10<format=hex>;
+    uint32 offset11<format=hex>;
+} ValuesType5;
+
+typedef struct
+{
+    int32 Part_Name<read=ResourceRefRead>;
+    int32 val;
+    int32 id;
+    int32 val;
+    uint32 offset4<format=hex>;
+    int32 val;
+    uint32 offset6<format=hex>;
+    int32 val;
+    uint32 offset8<format=hex>;
+} ValuesType8;
+
+typedef struct {
+        uint32 End_offset<format=hex>;
+        int32 Sound1Type<read=ResourceRefRead>;
+        int32 id;
+        uint32 offset<format=hex>;
+        int32 Sound2Type<read=ResourceRefRead>;
+        int32 val;
+        int32 val;
+        int32 Sound3Type<read=ResourceRefRead>;
+        int32 val;
+        uint32 offset<format=hex>;
+} CollisionsEntryValues3;
+
+typedef struct {
+        uint32 End_offset<format=hex>;
+        int32 Sound1Type<read=ResourceRefRead>;
+        int32 val;
+        uint32 offset<format=hex>;
+        int32 Sound2Type<read=ResourceRefRead>;
+        int32 val;
+        int32 val;
+        int32 Sound3Type<read=ResourceRefRead>;
+        int32 val;
+        uint32 offset<format=hex>;
+} CollisionsEntryValues2;
+
+typedef struct {
+        uint32 End_offset<format=hex>;
+        int32 Sound1Type<read=ResourceRefRead>;
+        int32 id;
+        uint32 offset<format=hex>;
+        int32 Sound2Type<read=ResourceRefRead>;
+        int32 val;
+        int32 val;
+        int32 Sound3Type<read=ResourceRefRead>;
+        int32 val;
+        uint32 offset<format=hex>;
+} CollisionsEntryValues;
+
+
+typedef struct {
+    int32 Part_Name <read=ResourceRefRead>; // offset p/ string com o nome do objeto
+    int32 type;
+    switch (type){
+        case 0:
+            CollisionsEntryValues Parameters;
+            ValuesType_M1 SubPart;
+            break;
+        case 2:
+            CollisionsEntryValues Parameters;
+            ValuesType_M1 SubPart;
+            break;
+        case 8:
+            CollisionsEntryValues2 Parameters;
+            ValuesType_M1 SubPart;
+            break;
+        case 5:
+            CollisionsEntryValues3 Parameters;
+            ValuesType5 SubPart;
+            break;
+    
+        case -1:
+            int32 id;
+            int32 val;
+            uint32 offset<format=hex>;
+            int32 val;
+            int32 offset<format=hex>;
+            int32 val;
+            uint32 offset<format=hex>;
+            ValuesType8 SubPart;
+            break;
+    }
+  
+} CollisionsEntry;
+
+string ObjectEntryRead( ObjectEntry &obj )
+{
+    local string s;
+    SPrintf( s, "\"%s\" (type=%d)", ReadRefString( obj.nameOffset ), obj.type );
+    return s;
+}
+
+FileHeader header;
+
+if( header.magic != "#FMP" )
+    Warning( "Assinatura '#FMP' nao encontrada - este arquivo pode nao ser deste formato." );
+
+
+if( header.sections[0].count > 0 && header.sections[0].offset > 0 )
+{
+    FSeek( header.sections[0].offset );
+    SpecialEntry section0Entries[ header.sections[0].count ] <optimize=false>;
+}
+
+
+if( header.sections[1].count > 0 && header.sections[1].offset > 0 )
+{
+    FSeek( header.sections[1].offset );
+    ObjectEntry objects[ header.sections[1].count ] <optimize=false>;
+}
+
+if( header.sections[2].count > 0 && header.sections[2].offset > 0 )
+{
+    FSeek( header.sections[2].offset );
+    CollisionsEntry Collisions[ header.sections[2].count ] <optimize=false>;
+}
+
+
+if( header.sections[3].count > 0 && header.sections[3].offset > 0 )
+{
+    FSeek( header.sections[3].offset );
+    ResourceRef emoRefs[ header.sections[3].count ] <optimize=false>; // nomes .emo
+}
+
+if( header.sections[4].count > 0 && header.sections[4].offset > 0 )
+{
+    FSeek( header.sections[4].offset );
+    ResourceRef embRefs[ header.sections[4].count ] <optimize=false>; // nomes .emb
+}
+
+if( header.sections[5].count > 0 && header.sections[5].offset > 0 )
+{
+    FSeek( header.sections[5].offset );
+    ResourceRef emmRefs[ header.sections[5].count ] <optimize=false>; // nomes .emm
+}
