@@ -139,6 +139,21 @@ typedef struct {
     int32 unk;
     int32 unk;
     int32 unk;
+} DataTypeA1;
+
+typedef struct {
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
+    int32 unk;
     int32 unk;
     int32 unk;
     int32 unk;
@@ -162,6 +177,61 @@ typedef struct {
     int32 unk;
     int32 unk;
 } DataTypeA;
+
+void ObjDatasSwittch (int i) {
+    local int64 __pos;
+    if (dataOffsetA > 0) {
+        __pos = FTell();
+        FSeek(dataOffsetA);
+        switch (i) {
+            case 1:
+                DataTypeA Data_A;
+                break;
+            case 3:
+                DataTypeA Data_A;
+                break;
+            case 5:
+                DataTypeA1 Data_A;
+                break;
+        }
+        FSeek(__pos);
+    }
+
+    if (dataOffsetB > 0) {
+        __pos = FTell();
+        FSeek(dataOffsetB);
+        switch (i) {
+            case 1:
+                DataTypeA Data_B;
+                break;
+            case 3:
+                DataTypeA Data_B;
+                break;
+            case 5:
+                DataTypeA1 Data_B;
+                break;
+        }
+        FSeek(__pos);
+    }
+
+    if (dataOffsetC > 0) {
+        __pos = FTell();
+        FSeek(dataOffsetC);
+        switch (i) {
+            case 1:
+                DataTypeA Data_C;
+                break;
+            case 3:
+                DataTypeA Data_C;
+                break;
+            case 5:
+                DataTypeA1 Data_C;
+                break;
+        }
+        FSeek(__pos);
+    }
+  
+}
 
 typedef struct {
     int32 nameOffset <read=ResourceRefRead>; // offset p/ string com o nome do objeto
@@ -204,30 +274,15 @@ typedef struct {
     // senão o próximo elemento do array ObjectEntry[] começa a ser lido
     // no lugar errado e o 010 Editor acusa
     // "Ending position was in front of starting position".
-    local int64 __pos;
 
-    if (dataOffsetA > 0) {
-        __pos = FTell();
-        FSeek(dataOffsetA);
-        DataTypeA Data_A;
-        FSeek(__pos);
-    }
-
-    if (dataOffsetB > 0) {
-        __pos = FTell();
-        FSeek(dataOffsetB);
-        DataTypeA Data_B;
-        FSeek(__pos);
-    }
-
-    if (dataOffsetC > 0) {
-        __pos = FTell();
-        FSeek(dataOffsetC);
-        DataTypeA Data_C;
-        FSeek(__pos);
-    }
+    ObjDatasSwittch(type);
 
 } ObjectEntry <read=ObjectEntryRead>;
+
+{
+    int32 val;
+    int32 Subpart_Name<read=ResourceRefRead>;
+} MeshDataEntries;
 
 typedef struct
 {
@@ -236,9 +291,9 @@ typedef struct
     int32 val;
     int32 val;
     uint32 offset1<format=hex>;
-    uint32 offset2<format=hex>;
+    int32 val;
     uint32 offset3<format=hex>;
-    uint32 offset4<format=hex>;
+    int32 val;
     uint32 offset5<format=hex>;
 } ValuesType_M1;
 
