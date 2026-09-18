@@ -116,82 +116,254 @@ typedef struct {
 } SpecialEntry;
 
 typedef struct {
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-} DataTypeA1;
+    int32 unk01;
+    int32 unk02;
+    int32 unk03;
+    int32 unk04;
+    int32 unk05;
+    int32 unk06;
+    int32 unk07;
+    int32 unk08;
+    int32 unk09;
+    int32 unk10;
+    int32 unk11;
+    int32 unk12;
+    int32 unk13;
+    int32 unk14;
+    int32 unk15;
+    int32 unk16;
+    int32 unk17;
+    int32 unk18;
+    int32 unk19;
+    int32 unk20;
+    int32 unk21;
+    int32 unk22;
+    int32 unk23;
+    int32 unk24;
+    int32 unk25;
+    int32 unk26;
+    int32 unk27;
+    int32 unk28;
+    int32 unk29;
+    int32 unk30;
+} DataTypeC1;
 
 typedef struct {
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-    int32 unk;
-} DataTypeA;
+    int32 unk01;
+    int32 unk02;
+    int32 unk03;
+    int32 unk04;
+    int32 unk05;
+    int32 unk06;
+    int32 unk07;
+    int32 unk08;
+    int32 unk09;
+    int32 unk10;
+    int32 unk11;
+    int32 unk12;
+    int32 unk13;
+    int32 unk14;
+    int32 unk15;
+    int32 unk16;
+    int32 unk17;
+    int32 unk18;
+    int32 unk19;
+    int32 unk20;
+    int32 unk21;
+    int32 unk22;
+    int32 unk23;
+} DataTypeA5;
+
+// CORRIGIDO: a versao anterior declarava unk19..unk23 DUAS VEZES no mesmo
+// struct (identificador duplicado - o 010 Editor rejeita isso e o template
+// nem chegava a compilar). A CONTAGEM de campos (28 x int32 = 112 bytes) ja
+// estava certa - confirmado batendo exatamente, byte a byte, com o gap real
+// entre dataOffsetB de um objeto type=5 e o dataOffsetA do objeto type=5
+// seguinte, sem nenhuma sobra, em 2 pares consecutivos no FTG.map:
+//   SOUND_Hit.dataB (0x1870) -> SOUND_Pot.dataA   (0x18E0) = 0x70 = 112 bytes
+//   SOUND_Pot.dataB (0x193C) -> SOUND_Statue.dataA(0x19AC) = 0x70 = 112 bytes
+// Só os NOMES dos ultimos 5 campos foram trocados p/ unk24..unk28.
+typedef struct {
+    int32 unk01;
+    int32 unk02;
+    int32 unk03;
+    int32 unk04;
+    int32 unk05;
+    int32 unk06;
+    int32 unk07;
+    int32 unk08;
+    int32 unk09;
+    int32 unk10;
+    int32 unk11;
+    int32 unk12;
+    int32 unk13;
+    int32 unk14;
+    int32 unk15;
+    int32 unk16;
+    int32 unk17;
+    int32 unk18;
+    int32 unk19;
+    int32 unk20;
+    int32 unk21;
+    int32 unk22;
+    int32 unk23;
+    int32 unk24;
+    int32 unk25;
+    int32 unk26;
+    int32 unk27;
+    int32 unk28;
+} DataTypeB5;
+
+typedef struct {
+    int32 Name <read=ResourceRefRead>;
+    uint32 ParametersOffset<format=hex>;
+    int32 ParameterCount;
+    int32 Unk;
+} SubDataTypeB3;
+
+typedef struct {
+    int32 Name <read=ResourceRefRead>;
+    uint32 unk02<format=hex>;
+    int32 ParameterCount;
+    int32 ParametersOffset;
+    
+    local int64 __pos;
+    
+    if (ParameterCount > 0){
+        __pos = FTell();
+        FSeek(ParametersOffset);
+        SubDataTypeB3 unk05[ParameterCount]<optimize=false>;
+        FSeek(__pos);
+    }
+} DataTypeB3; // ERA usado (incorretamente) para type==3 dataOffsetB
+
+// OBSOLETO / NAO CONFIAVEL para type==1 - mantido só de referencia histórica,
+// sem uso no switch. O bloco apontado por dataOffsetA quando type==1 NAO tem
+// tamanho fixo de 34 int32 (136 bytes): medido diretamente (dataOffsetC -
+// dataOffsetA, ja que hasExtraC/dataOffsetC sempre existe nos objetos type==1
+// das 4 amostras) deu:
+//   galaxy.dataA (FTG):   0xDC4 - 0x604 = 1984 bytes
+//   BG00.dataA   (FTG):   0x1674 - 0xEB4 = 1984 bytes
+//   SLB_BG.dataA (SLB):   0x434 - 0x2C8 = 364 bytes
+//   CLC_BG.dataA (CLC):   0x434 - 0x2C8 = 364 bytes
+// Ou seja, o tamanho MUDA de objeto pra objeto e de arquivo pra arquivo, mas
+// SEMPRE bate exatamente com "dataOffsetC - dataOffsetA" do PROPRIO
+// ObjectEntry - o fim do bloco não vem de um campo dentro dele mesmo, e sim
+// do offset de outro campo do registro pai. Inspecionando o conteudo dá pra
+// ver padrões repetidos de registros de ~92 bytes (mesmo tamanho de
+// DataTypeA5) seguidos de outro tipo de registro maior (~176 bytes), mas o
+// formato interno completo ainda não foi decifrado - por ora é lido como
+// blob/array cru (ver ObjDatasSwittch), usando esse tamanho calculado em vez
+// de tentar impor este struct fixo (que sub-lia ou sobre-lia o bloco real).
+typedef struct {
+    int32 unk01;
+    int32 unk02;
+    int32 unk03;
+    int32 unk04;
+    int32 unk05;
+    int32 unk06;
+    int32 unk07;
+    int32 unk08;
+    int32 unk09;
+    int32 unk10;
+    int32 unk11;
+    int32 unk12;
+    int32 unk13;
+    int32 unk14;
+    int32 unk15;
+    int32 unk16;
+    int32 unk17;
+    int32 unk18;
+    int32 unk19;
+    int32 unk20;
+    int32 unk21;
+    int32 unk22;
+    int32 unk23;
+    int32 unk24;
+    int32 unk25;
+    int32 unk26;
+    int32 unk27;
+    int32 unk28;
+    int32 unk29;
+    int32 unk30;
+    int32 unk31;
+    int32 unk32;
+    int32 unk33;
+    int32 unk34;
+} DataTypeA; // ERA usado (incorretamente) como struct fixo p/ type==1 dataOffsetA
+
+// CONFIRMADO byte a byte em SLB.map e CLC.map: é isto que existe no offset
+// apontado por dataOffsetC quando type==3 (o "case 3" ficava vazio/comentado
+// no template original, mas há dado real lá - 72 bytes, terminando exatamente
+// onde começa o próximo ObjectEntry do array).
+// NOVO - DataType que faltava por completo no template. Confirmado que,
+// SEMPRE que type==3 && hasExtraC==1, logo depois dos 72 bytes de
+// endOffset+reserved+Matrix4x4 (ObjDataC3 original) vem, sem nenhum gap,
+// mais um bloco fixo de 48 bytes (12 int32) - o "endOffset" acima só marca
+// o fim da Matrix4x4, não o fim do bloco todo. Esse bloco de 48 bytes tem o
+// mesmo layout nos 3 arquivos, mudando só o nome referenciado e o raio:
+//   REF01.dataC (FTG):  nameRef->"REFTEX", 1, -1, 2,  -1,-1,-1,-1, 0, 60.0, 60.0, 4500.0
+//   ENVTEX.dataC(FTG):  nameRef->"ENVTEX", 1, -1, 0,  -1,-1,-1,-1, 0, 60.0, 60.0, 4500.0
+//   ENVTEX.dataC(SLB):  nameRef->"ENVMAP", 1, -1, 0,  -1,-1,-1,-1, 0, 60.0, 60.0, 4600.0
+//   ENVTEX.dataC(CLC):  nameRef->"ENVMAP", 1, -1, 0,  -1,-1,-1,-1, 0, 60.0, 60.0, 4600.0
+// O último float bate exatamente com header.settings.boundsRadius do mesmo
+// arquivo (4500 no FTG.map, 4600 no SLB.map/CLC.map) - então é bastante
+// provável que seja o raio/distância da textura de referência/reflexo, e os
+// dois floats de 60.0 antes sejam algo como near/far de uma "câmera" de
+// reflexo. Com este bloco, ObjDataC3 passa a ter 72+48=120 bytes totais,
+// e isso bate exato com sections[2].offset em SLB.map/CLC.map (1196=0x4AC),
+// ou seja, fecha certinho sem sobra nem falta.
+typedef struct {
+    ResourceRef texNameRef;  // nome referenciado: "REFTEX" / "ENVTEX" / "ENVMAP" nas amostras
+    int32 unk1;              // sempre 1 nas amostras
+    int32 unk2<format=hex>;  // sempre -1 (0xFFFFFFFF) nas amostras
+    int32 unk3;              // 0 ou 2 nas amostras (varia) ??
+    int32 unk4<format=hex>;  // sempre -1
+    int32 unk5<format=hex>;  // sempre -1
+    int32 unk6<format=hex>;  // sempre -1
+    int32 unk7<format=hex>;  // sempre -1
+    int32 unk8;              // sempre 0
+    float nearOrClip1;       // sempre 60.0 nas amostras
+    float farOrClip2;        // sempre 60.0 nas amostras
+    float boundsRadius;      // igual a header.settings.boundsRadius do mesmo arquivo (4500/4600)
+} ObjDataC3_TexRefBlock;
+
+typedef struct {
+    uint32 endOffset<format=hex>; // aponta para logo depois da Matrix4x4 (NAO eh o fim
+                                   // do bloco todo - ver ObjDataC3_TexRefBlock abaixo) -
+                                   // mesmo padrão do campo "End_offset" visto em
+                                   // CollisionsEntryValues3
+    int32  reserved;              // sempre 0 nas amostras
+    Matrix4x4 matrix;             // sempre identidade nas amostras
+
+    // CORREÇÃO: antes este struct tinha só 72 bytes e o template ignorava
+    // silenciosamente os 48 bytes seguintes. Confirmado presente e com o
+    // mesmo formato em TODAS as amostras onde type==3 && hasExtraC==1.
+    ObjDataC3_TexRefBlock texRef;
+} ObjDataC3; // agora 120 bytes totais (era 72)
 
 void ObjDatasSwittch (int i) {
     local int64 __pos;
+    local int64 __blobSize;
+
     if (dataOffsetA > 0) {
         __pos = FTell();
         FSeek(dataOffsetA);
         switch (i) {
             case 1:
-                DataTypeA Data_A;
+                if (dataOffsetC > dataOffsetA) {
+                    __blobSize = dataOffsetC - dataOffsetA;
+                    uint32 Data_A_raw[ __blobSize / 4 ] <format=hex, comment="tamanho variavel = dataOffsetC - dataOffsetA; formato interno nao totalmente decifrado">;
+                } else {
+                
+                    uint32 Data_A_rawPreview[8] <format=hex, comment="TODO: dataOffsetC ausente/invalido - tamanho real desconhecido, mostrando so os 32 bytes iniciais">;
+                }
                 break;
             case 3:
-                DataTypeA Data_A;
+                uint32 Data_A_rawPreview[8] <format=hex, comment="TODO: nunca visto != 0 nas amostras - formato especulativo, preview de 32 bytes">;
                 break;
             case 5:
-                DataTypeA1 Data_A;
+                DataTypeA5 Data_A;
                 break;
         }
         FSeek(__pos);
@@ -202,13 +374,13 @@ void ObjDatasSwittch (int i) {
         FSeek(dataOffsetB);
         switch (i) {
             case 1:
-                DataTypeA Data_B;
+                uint32 Data_B_rawPreview[8] <format=hex, comment="TODO: nunca visto != 0 nas amostras - formato especulativo, preview de 32 bytes">;
                 break;
             case 3:
-                DataTypeA Data_B;
+                DataTypeB3 Data_B;
                 break;
             case 5:
-                DataTypeA1 Data_B;
+                DataTypeB5 Data_B;
                 break;
         }
         FSeek(__pos);
@@ -219,13 +391,13 @@ void ObjDatasSwittch (int i) {
         FSeek(dataOffsetC);
         switch (i) {
             case 1:
-                DataTypeA Data_C;
+                DataTypeC1 Data_C;
                 break;
             case 3:
-                DataTypeA Data_C;
+                ObjDataC3 Data_C;
                 break;
             case 5:
-                DataTypeA1 Data_C;
+                DataTypeA5 Data_C;
                 break;
         }
         FSeek(__pos);
@@ -235,66 +407,148 @@ void ObjDatasSwittch (int i) {
 
 typedef struct {
     int32 nameOffset <read=ResourceRefRead>; // offset p/ string com o nome do objeto
-    int32 type;          // 1, 3 ou 5 nas amostras - parece indicar categoria
-                          // (1=camada/fundo, 3=script ou textura, 5=som) ??
+    int32 type;          // 1, 3 ou 5 nas amostras - indica categoria
+                          // (1=camada/fundo, 3=script/textura/som "on-off", 5=som) ??
     int32 flags;          // bitflags - significado ainda não mapeado ??
     int32 dataOffsetA<format=hex>;    // offset p/ dado extra (usado por objetos tipo "fundo" e "som") ??
     int32 dataOffsetB<format=hex>;    // offset p/ dado extra (usado por objetos tipo "script" e "som") ??
     int32 hasExtraC;
     int32 dataOffsetC<format=hex>;
     int32 hash;       // sempre 0x3FFFFFFF
-    Matrix4x4 Matrix; 
-    int32 Name<read=ResourceRefRead>;
-    int32 val;
-    int32 flag;
-    uint32 offset<format=hex>;
-    uint32 offset<format=hex>;
-    uint32 test06<format=hex>;
-    uint32 test07<format=hex>;
-    uint32 flag<format=hex>;
-    uint32 flag<format=hex>;
-    uint32 test10<format=hex>;
-    uint32 test11<format=hex>;
-    uint32 test12<format=hex>;
-    uint32 test13<format=hex>;
-    uint32 flag<format=hex>;
-    uint32 test15<format=hex>;
-    uint32 test16<format=hex>;
-    uint32 test17<format=hex>;
-    uint32 test18<format=hex>;
-    uint32 flag<format=hex>;
-    uint32 test20<format=hex>;
-    uint32 test21<format=hex>;
-    uint32 test22<format=hex>;
-    uint32 test23<format=hex>;
-    uint32 flag<format=hex>;
-
-    // FIX: os offsets abaixo geralmente apontam para trás no arquivo.
-    // É preciso salvar e restaurar a posição do ponteiro depois de ler,
-    // senão o próximo elemento do array ObjectEntry[] começa a ser lido
-    // no lugar errado e o 010 Editor acusa
-    // "Ending position was in front of starting position".
+    Matrix4x4 Matrix;  // sempre identidade nas amostras
 
     ObjDatasSwittch(type);
 
 } ObjectEntry <read=ObjectEntryRead>;
 
+typedef struct
+
 {
-    int32 val;
-    int32 Subpart_Name<read=ResourceRefRead>;
-} MeshDataEntries;
+    float x;
+    float y;
+    float z;
+} float3f;
+
+typedef struct
+{
+    uint8 p1;
+    uint8 p2;
+} TraingleEntry;
+
+typedef struct
+{
+    float3f Positon;
+    float3f Normal;
+} VertexDataEntry;
+
+// CONFIRMADO: comparando byte a byte com VertexData_Groups do mesmo subpart,
+// os valores aqui são IDÊNTICOS às posições dos vértices (sem a normal).
+// Ou seja, isto é uma cópia "achatada" (sem normal) dos vértices, usada
+// provavelmente para colisão/física em vez de render.
+typedef struct
+{
+    float x, y, z;      // igual a VertexDataEntry.Positon do mesmo subpart
+    int32 flag<format=hex>;  // sempre 0 nas amostras - reservado/flag por vertice ??
+} CollisionVertex; // ERA "SubUnkData" (4x uint32 sem sentido) / depois "CollisionPoint"
+
+// CONFIRMADO em 4 blocos independentes de FTG.map (idxCount 128/984/144/336,
+// contra 24/220/28/84 pontos): em TODOS os grupos de 4 uint16, o 4º valor é
+// sempre 0, e os 3 primeiros nunca excedem count1-1 (o índice máximo usado
+// bate exatamente com o último ponto do array). Ou seja, cada grupo de 4 é
+// 1 triângulo de colisão: 3 índices em CollisionVertex[] + 1 flag/material
+// (sempre 0 nas amostras vistas até agora, mas o slot existe e pode ser
+// usado em outros mapas).
+typedef struct
+{
+    uint16 idx0, idx1, idx2; // índices em CollisionVertex[] (Vertices, do mesmo CollisionSubMesh)
+    uint16 triFlag<format=hex>; // sempre 0 nas amostras - slot de flag/material por triangulo
+} CollisionTri;
+
+// Bloco apontado por Offset0: cabeçalho + lista de triângulos de colisão.
+typedef struct
+{
+    int32  unkRef<format=hex>;     // sempre -1 (0xFFFFFFFF) nas amostras
+    int32  unkVal;                 // sempre 0
+    int32  idxCount;               // total de uint16 em idxOffset (8 = 2 triangulos x 4)
+    uint32 idxOffset<format=hex>;
+    int32  reserved[4];            // sempre 0 nas amostras
+    int32  unkVal2;                // sempre 2 nas amostras
+
+    local int64 __pos2;
+    if (idxCount > 0) {
+        __pos2 = FTell();
+        FSeek(idxOffset);
+        CollisionTri tris[idxCount / 4];
+        FSeek(__pos2);
+    }
+} CollisionIndexBlock; // ERA totalmente ignorado no template original
+
+typedef struct
+{
+    int32 triangleCount;             // ERA "count0" - qtd de CollisionIndexBlock (Offset0)
+    uint32 triangleBlockOffset<format=hex>; // ERA "Offset0"
+    int32 vertexCount;               // ERA "count1" - qtd de CollisionVertex (Offset1)
+    uint32 vertexOffset<format=hex>; // ERA "Offset1"
+    uint32 unkOffset2<format=hex>;   // ERA "Offset2" - aponta p/ bloco que REPETE os mesmos
+                                      // pontos intercalados com valores tipo 0xCDCDCD.. -
+                                      // padrão clássico de heap não-inicializado
+                                      // (memory fill byte do CRT da Microsoft), ou seja,
+                                      // provavelmente é lixo de um buffer temporário do
+                                      // exportador, não dado real. Deixado sem parse
+                                      // estruturado de propósito.
+    
+    local int64 __pos;
+    
+    if (vertexCount > 0){
+        __pos = FTell();
+        FSeek(vertexOffset);
+        CollisionVertex Vertices[vertexCount]<optimize=false>;
+        FSeek(__pos);
+    }
+
+    if (triangleCount > 0){
+        __pos = FTell();
+        FSeek(triangleBlockOffset);
+        CollisionIndexBlock IndexBlocks[triangleCount]<optimize=false>;
+        FSeek(__pos);
+    }
+    
+} CollisionSubMesh; // ERA "UnkDataEntry"
 
 typedef struct
 {
     int32 Subpart_Name<read=ResourceRefRead>;
-    int32 val;
-    int32 val;
-    int32 val;
-    uint32 offset1<format=hex>;
-    int32 val;
-    uint32 offset3<format=hex>;
-    int32 val;
-    uint32 offset5<format=hex>;
+    int32 val01;          // ERA "val" (duplicado)
+    int32 val02;          // ERA "val" (duplicado)
+    int32 subMeshCount;              // ERA "val1"
+    uint32 subMeshOffset<format=hex>; // ERA "offset1"
+    int32 VertexCount;
+    uint32 VertexOffset<format=hex>;
+    int32 TriangleCount;
+    uint32 TriangleOffset<format=hex>;
+    
+    local int64 __pos;
+    
+    if (subMeshCount > 0){
+        __pos = FTell();
+        FSeek(subMeshOffset);
+        CollisionSubMesh CollisionSubMeshes[subMeshCount]<optimize=false>; // ERA "UnkDataEntry DataUnk2[val1]"
+        FSeek(__pos);
+    }
+    
+    if (VertexCount > 0){
+        __pos = FTell();
+        FSeek(VertexOffset);
+        VertexDataEntry VertexData_Groups[VertexCount];
+        FSeek(__pos);
+    }
+    
+    if (TriangleCount > 0){
+        __pos = FTell();
+        FSeek(TriangleOffset);
+        TraingleEntry Traingle_Groups[TriangleCount];
+        FSeek(__pos);
+    }
 } ValuesType_M1;
 
 typedef struct
@@ -315,53 +569,52 @@ typedef struct
 typedef struct
 {
     int32 Part_Name<read=ResourceRefRead>;
-    int32 val;
+    int32 val01;          // ERA "val" (duplicado)
     int32 id;
-    int32 val;
+    int32 val02;          // ERA "val" (duplicado)
     uint32 offset4<format=hex>;
-    int32 val;
+    int32 val03;          // ERA "val" (duplicado)
     uint32 offset6<format=hex>;
-    int32 val;
+    int32 val04;          // ERA "val" (duplicado)
     uint32 offset8<format=hex>;
-} ValuesType8;
+    
+} SubPartsEntries;
 
 typedef struct {
         uint32 End_offset<format=hex>;
         int32 Sound1Type<read=ResourceRefRead>;
         int32 id;
-        uint32 offset<format=hex>;
+        uint32 offset01<format=hex>; // ERA "offset" (duplicado)
         int32 Sound2Type<read=ResourceRefRead>;
-        int32 val;
-        int32 val;
+        int32 val01;          // ERA "val" (duplicado)
+        int32 val02;          // ERA "val" (duplicado)
         int32 Sound3Type<read=ResourceRefRead>;
-        int32 val;
-        uint32 offset<format=hex>;
+        int32 val03;          // ERA "val" (duplicado)
+        uint32 offset02<format=hex>; // ERA "offset" (duplicado)
 } CollisionsEntryValues3;
 
 typedef struct {
-        uint32 End_offset<format=hex>;
         int32 Sound1Type<read=ResourceRefRead>;
-        int32 val;
-        uint32 offset<format=hex>;
+        int32 val01;          // ERA "val" (duplicado)
+        uint32 offset01<format=hex>; // ERA "offset" (duplicado)
         int32 Sound2Type<read=ResourceRefRead>;
-        int32 val;
-        int32 val;
+        int32 val02;          // ERA "val" (duplicado)
+        int32 val03;          // ERA "val" (duplicado)
         int32 Sound3Type<read=ResourceRefRead>;
-        int32 val;
-        uint32 offset<format=hex>;
+        int32 val04;          // ERA "val" (duplicado)
+        uint32 offset02<format=hex>; // ERA "offset" (duplicado)
 } CollisionsEntryValues2;
 
 typedef struct {
-        uint32 End_offset<format=hex>;
         int32 Sound1Type<read=ResourceRefRead>;
         int32 id;
-        uint32 offset<format=hex>;
+        uint32 offset01<format=hex>; // ERA "offset" (duplicado)
         int32 Sound2Type<read=ResourceRefRead>;
-        int32 val;
-        int32 val;
+        int32 val01;          // ERA "val" (duplicado)
+        int32 val02;          // ERA "val" (duplicado)
         int32 Sound3Type<read=ResourceRefRead>;
-        int32 val;
-        uint32 offset<format=hex>;
+        int32 val03;          // ERA "val" (duplicado)
+        uint32 offset02<format=hex>; // ERA "offset" (duplicado)
 } CollisionsEntryValues;
 
 
@@ -370,14 +623,17 @@ typedef struct {
     int32 type;
     switch (type){
         case 0:
+            uint32 SubPart_offset<format=hex>;
             CollisionsEntryValues Parameters;
             ValuesType_M1 SubPart;
             break;
         case 2:
+            uint32 SubPart_offset<format=hex>;
             CollisionsEntryValues Parameters;
             ValuesType_M1 SubPart;
             break;
         case 8:
+            uint32 SubPart_offset<format=hex>;
             CollisionsEntryValues2 Parameters;
             ValuesType_M1 SubPart;
             break;
@@ -388,13 +644,18 @@ typedef struct {
     
         case -1:
             int32 id;
-            int32 val;
-            uint32 offset<format=hex>;
-            int32 val;
-            int32 offset<format=hex>;
-            int32 val;
-            uint32 offset<format=hex>;
-            ValuesType8 SubPart;
+            int32 val01;              // ERA "val" (duplicado)
+            uint32 offset01<format=hex>; // ERA "offset" (duplicado)
+            int32 val02;              // ERA "val" (duplicado)
+            int32 offset02<format=hex>;  // ERA "offset" (duplicado)
+            int32 val03;              // ERA "val" (duplicado)
+            uint32 offset03<format=hex>; // ERA "offset" (duplicado)
+            ValuesType_M1 SubPart;
+            break;
+        default:
+            uint32 SubPart_offset<format=hex>;
+            CollisionsEntryValues Parameters;
+            ValuesType_M1 SubPart;
             break;
     }
   
