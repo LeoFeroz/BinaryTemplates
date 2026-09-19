@@ -215,10 +215,38 @@ typedef struct {
 } DataTypeB5;
 
 typedef struct {
+    float Value;
+} SubSubSubDataTypeB3;
+
+typedef struct {
     int32 Name <read=ResourceRefRead>;
+    int32 count;
     uint32 ParametersOffset<format=hex>;
-    int32 ParameterCount;
-    int32 Unk;
+    
+    local int64 __pos;
+    
+    if (count > 0){
+        __pos = FTell();
+        FSeek(ParametersOffset);
+        SubSubSubDataTypeB3 SoundOperators<optimize=false>;
+        FSeek(__pos);
+    }
+} SubSubDataTypeB3;
+
+typedef struct {
+    int32 Name <read=ResourceRefRead>;
+    uint32 flag<format=hex>;
+    int32 SoundOperatorsCount;
+    uint32 SoundOperatorsOffset<format=hex>;
+    
+    local int64 __pos;
+    
+    if (SoundOperatorsCount > 0){
+        __pos = FTell();
+        FSeek(SoundOperatorsOffset);
+        SubSubDataTypeB3 SoundOperators[SoundOperatorsCount]<optimize=false>;
+        FSeek(__pos);
+    }
 } SubDataTypeB3;
 
 typedef struct {
@@ -232,7 +260,7 @@ typedef struct {
     if (ParameterCount > 0){
         __pos = FTell();
         FSeek(ParametersOffset);
-        SubDataTypeB3 unk05[ParameterCount]<optimize=false>;
+        SubDataTypeB3 Parameters[ParameterCount]<optimize=false>;
         FSeek(__pos);
     }
 } DataTypeB3; // ERA usado (incorretamente) para type==3 dataOffsetB
@@ -377,7 +405,7 @@ void ObjDatasSwittch (int i) {
                 uint32 Data_B_rawPreview[8] <format=hex, comment="TODO: nunca visto != 0 nas amostras - formato especulativo, preview de 32 bytes">;
                 break;
             case 3:
-                DataTypeB3 Data_B;
+                DataTypeB3 SoundData;
                 break;
             case 5:
                 DataTypeB5 Data_B;
